@@ -34,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
 const ButtonGrid = (props) => {
   const classes = useStyles();
 
-  const calculateValue = (value) => {
-    console.log(value.replace(/[0-9]/g, ""));
-  };
-  calculateValue(props.value);
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -231,45 +227,56 @@ const BaseContainer = () => {
   const classes = useStyles();
   const [output, setOutput] = useState([0]);
   const [flag, setFlag] = useState(false);
-  // const [operator, setOperator] = useState([]);
+  const [operator, setOperator] = useState([]);
 
-  // const storeOperator = (value) => {
-  //   if (value === "+" || value === "-" || value === "*" || value === "/") {
-  //     setOperator((prevVal) => [...prevVal, value]);
-  //   }
-  // };
+  const storeOperator = (value) => {
+    if (value === "+" || value === "-" || value === "*" || value === "/") {
+      setOperator((prevVal) => [...prevVal, value]);
+    }
+  };
 
   const buttonClick = (value) => {
-    // storeOperator(value);
-    // if (operator.length === 2) {
-    //   setOutput((prevVal) => {
-    //     const val = evaluate(prevVal.substring(0, prevVal.length - 1));
-    //     const lastOperator = prevVal.substring(
-    //       prevVal.length - 1,
-    //       prevVal.length
-    //     );
-    //     setOperator([]);
-    //     return [val, lastOperator, value].join("");
-    //   });
-    // } else {
+    storeOperator(value);
+
     if (value === "AC") {
       setOutput([0]);
       setFlag(false);
       setOperator([]);
     } else if (value === "=") {
-      setOutput((prevClick) => [evaluate(prevClick)]);
+
+      setOutput((prevVal) => {
+        const lastVal = prevVal.substring(prevVal.length - 1, prevVal.length);
+        console.log(output.length);
+        if (lastVal === "+" || lastVal === "-" || lastVal === "/" || lastVal === "*") {
+          return [prevVal.substring(0, prevVal.length - 1)];
+        } else {
+          return [evaluate(prevVal)];
+        }
+      });
     } else {
       if (!flag) {
         setOutput([value]);
         setFlag(true);
       } else {
         setOutput((prevClick) => {
-          return [...prevClick, value].join("");
+          return [...prevClick, value].join('');
         });
       }
     }
-    // }
   };
+
+  if (operator.length  === 2) {
+    setOutput((prevVal) => {
+          const val = evaluate(prevVal.substring(0, prevVal.length - 1));
+          const lastOperator = prevVal.substring(
+            prevVal.length - 1,
+            prevVal.length
+          );
+
+          setOperator([lastOperator]);
+          return [val,lastOperator].join('');
+    });
+  }
 
   return (
     <React.Fragment>
@@ -281,8 +288,8 @@ const BaseContainer = () => {
   );
 };
 
-// const Calculator = () => {
-//   return <BaseContainer />;
-// };
+const Calculator = () => {
+  return <BaseContainer />;
+};
 
-export default BaseContainer;
+export default Calculator;
