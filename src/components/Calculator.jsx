@@ -53,7 +53,14 @@ const ButtonGrid = (props) => {
           </Paper>
         </Grid>
         <Grid item xs={3}>
-          <Paper className={classes.paper}>+/-</Paper>
+          <Paper 
+            className={classes.paper}
+            onClick={() => {
+              props.onClick("+/-");
+            }}
+          >
+            +/-
+          </Paper>
         </Grid>
         <Grid item xs={3}>
           <Paper className={classes.paper}>%</Paper>
@@ -235,6 +242,10 @@ const BaseContainer = () => {
     }
   };
 
+  const validateOperator = (val) => {
+    return ["+","-","/","*"].includes(val);
+  }
+
   const buttonClick = (value) => {
     storeOperator(value);
 
@@ -243,19 +254,36 @@ const BaseContainer = () => {
       setFlag(false);
       setOperator([]);
     } else if (value === "=") {
-
       setOutput((prevVal) => {
+        const secondToLastVal = prevVal.substring(prevVal.length - 2, prevVal.length - 1);
         const lastVal = prevVal.substring(prevVal.length - 1, prevVal.length);
-        console.log(output.length);
-        if (lastVal === "+" || lastVal === "-" || lastVal === "/" || lastVal === "*") {
+
+        if (validateOperator(secondToLastVal) && validateOperator(lastVal)) {
+          return [prevVal.substring(0, prevVal.length - 2)];
+        } else if(validateOperator(lastVal)) {
           return [prevVal.substring(0, prevVal.length - 1)];
         } else {
           return [evaluate(prevVal)];
         }
       });
+      setOperator([]);
+    } else if (value === "+/-") {
+      // if operator is 0 add negate sign before the value
+      // if operator is 1 check where it is
+        // if operator is before the value
+          // do this
+        // if operator is after the value
+          // do this
+        // else
+          //  do this 
+      console.log(operator.length);
+      // setOutput((prevVal) => {
+
+      //   return 
+      // });
     } else {
       if (!flag) {
-        setOutput([value]);
+        setOutput([value].join(''));
         setFlag(true);
       } else {
         setOutput((prevClick) => {
@@ -267,14 +295,24 @@ const BaseContainer = () => {
 
   if (operator.length  === 2) {
     setOutput((prevVal) => {
-          const val = evaluate(prevVal.substring(0, prevVal.length - 1));
-          const lastOperator = prevVal.substring(
+          const secondToLastValue = prevVal.substring(
+            prevVal.length - 2,
+            prevVal.length - 1
+          );
+          const lastValue = prevVal.substring(
             prevVal.length - 1,
             prevVal.length
           );
-
-          setOperator([lastOperator]);
-          return [val,lastOperator].join('');
+          
+          if (validateOperator(secondToLastValue) && validateOperator(lastValue)) {
+            setOperator([secondToLastValue]);
+            return [prevVal];
+          } else {
+            const val = evaluate(prevVal.substring(0, prevVal.length - 1));
+            setOperator([lastValue]);
+            return [val,lastValue].join('');
+          } 
+          
     });
   }
 
