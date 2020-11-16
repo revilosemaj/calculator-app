@@ -263,24 +263,28 @@ const BaseContainer = () => {
         } else if(validateOperator(lastVal)) {
           return [prevVal.substring(0, prevVal.length - 1)];
         } else {
-          return [evaluate(prevVal)];
+          try{
+            return [evaluate(prevVal)];
+          } catch(e) {
+            return "Invalid expression";
+          }
         }
       });
       setOperator([]);
     } else if (value === "+/-") {
-      // if operator is 0 add negate sign before the value
-      // if operator is 1 check where it is
-        // if operator is before the value
-          // do this
-        // if operator is after the value
-          // do this
-        // else
-          //  do this 
-      console.log(operator.length);
-      // setOutput((prevVal) => {
-
-      //   return 
-      // });
+      const outputOperator =  output.replace(/[0-9]/g,'');
+      
+      if (!outputOperator.length) {
+        setOutput(`-${output}`);
+      } else { 
+        const lastOperator = outputOperator.slice(-1);
+        if (lastOperator === "*" || lastOperator === "/") {
+          setOutput(output.replace(outputOperator,`${outputOperator}-`));
+        } else {
+          const negateValue = lastOperator === "+" ? "-" : "+";
+          setOutput(output.replace(lastOperator, negateValue));
+        }
+      }; 
     } else {
       if (!flag) {
         setOutput([value].join(''));
@@ -306,7 +310,7 @@ const BaseContainer = () => {
           
           if (validateOperator(secondToLastValue) && validateOperator(lastValue)) {
             setOperator([secondToLastValue]);
-            return [prevVal];
+            return prevVal;
           } else {
             const val = evaluate(prevVal.substring(0, prevVal.length - 1));
             setOperator([lastValue]);
