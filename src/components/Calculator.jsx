@@ -253,38 +253,60 @@ const BaseContainer = () => {
       setOutput([0]);
       setFlag(false);
       setOperator([]);
-    } else if (value === "=") {
+      return;
+    }
+  
+    if (value === "=") {
       setOutput((prevVal) => {
-        const secondToLastVal = prevVal.substring(prevVal.length - 2, prevVal.length - 1);
-        const lastVal = prevVal.substring(prevVal.length - 1, prevVal.length);
-
-        if (validateOperator(secondToLastVal) && validateOperator(lastVal)) {
-          return [prevVal.substring(0, prevVal.length - 2)];
-        } else if(validateOperator(lastVal)) {
-          return [prevVal.substring(0, prevVal.length - 1)];
+        if (prevVal[0] === 0) {
+          return [0];
         } else {
-          try{
-            return [evaluate(prevVal)];
-          } catch(e) {
-            return "Invalid expression";
+          const secondToLastVal = prevVal.substring(prevVal.length - 2, prevVal.length - 1);
+          const lastVal = prevVal.substring(prevVal.length - 1, prevVal.length);
+
+          if (validateOperator(secondToLastVal) && validateOperator(lastVal)) {
+            return [prevVal.substring(0, prevVal.length - 2)];
+          } else if(validateOperator(lastVal)) {
+            return [prevVal.substring(0, prevVal.length - 1)];
+          } else {
+            try{
+              return [evaluate(prevVal)];
+            } catch(e) {
+              return "Invalid expression";
+            }
           }
         }
       });
       setOperator([]);
     } else if (value === "+/-") {
-      const outputOperator =  output.replace(/[0-9]/g,'');
-      
-      if (!outputOperator.length) {
-        setOutput(`-${output}`);
-      } else { 
-        const lastOperator = outputOperator.slice(-1);
-        if (lastOperator === "*" || lastOperator === "/") {
-          setOutput(output.replace(outputOperator,`${outputOperator}-`));
+      setOutput((prevVal) => {
+        if (prevVal[0] === 0) {
+          return [0];
         } else {
-          const negateValue = lastOperator === "+" ? "-" : "+";
-          setOutput(output.replace(lastOperator, negateValue));
+          const outputOperator =  prevVal.replace(/[0-9]/g,'');
+        
+          if (!outputOperator.length) {
+            return `-${output}`;
+          } else { 
+            const lastOperator = outputOperator.slice(-1);
+            const secondLastOperator = outputOperator.slice(-2,-1);
+
+            if (lastOperator === "*" || lastOperator === "/") {
+              return output.replace(outputOperator,`${outputOperator}-`);
+            } else {
+              let negateValue = "";
+              if (secondLastOperator === "*" || secondLastOperator === "/" || secondLastOperator === "") {
+                negateValue = lastOperator === "+" ? "-" : "";
+              } else {
+                negateValue = lastOperator === "+" ? "-" : "+";
+              }
+
+              return output.replace(lastOperator, negateValue);
+            }
+          } 
         }
-      }; 
+      });
+      
     } else {
       if (!flag) {
         setOutput([value].join(''));
@@ -316,7 +338,6 @@ const BaseContainer = () => {
             setOperator([lastValue]);
             return [val,lastValue].join('');
           } 
-          
     });
   }
 
