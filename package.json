@@ -7,18 +7,23 @@
     "starter"
   ],
   "main": "src/index.js",
+  "homepage": "https://revilosemaj.github.io/calculator-app",
   "dependencies": {
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
     "mathjs": "7.6.0",
     "react": "17.0.0",
     "react-dom": "17.0.0",
+    "react-particles-js": "^3.4.1",
     "react-scripts": "3.4.3"
   },
   "devDependencies": {
+    "gh-pages": "^3.1.0",
     "typescript": "3.8.3"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
